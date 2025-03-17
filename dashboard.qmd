@@ -1,0 +1,62 @@
+--- 
+title: "Elliot dashboard experiments"
+author: ""
+format: dashboard
+--- 
+
+```{python}
+import plotly.express as px
+df = px.data.gapminder()
+```
+
+## Maps {height=60%}
+
+```{r}
+# create map
+library(tidyverse)
+library(sf)
+library(ggthemes)
+library(ggrepel)
+library(rnaturalearth)
+
+mapWorld <- borders("world", colour="gray50", fill="gray50") # create a layer of borders
+
+# define data frame ensuring lat and lon are numeric vectors
+df <- tribble(
+  ~city_name,     ~latitude,  ~longitude,
+  "New York",     41.161597,  -74.252159,
+  "Florida",      28.2712175, -80.6680155,
+)
+
+df_sf <- st_as_sf(df, coords=c('longitude', 'latitude'), crs = 4326, remove = F)
+
+p <- ggplot(df_sf)+
+  mapWorld +
+  geom_sf(color = "white") +
+  geom_text_repel(aes(x=longitude, y=latitude, label=city_name), colour="white") +
+  theme(line = element_blank(),
+        text = element_blank(),
+        title = element_blank(),
+        panel.background = element_rect(fill='transparent'), #transparent panel bg
+        plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+        panel.grid.major = element_blank(), #remove major gridlines
+        panel.grid.minor = element_blank(), #remove minor gridlines
+        legend.background = element_rect(fill='transparent'), #transparent legend bg
+        legend.box.background = element_rect(fill='transparent') )
+p
+```
+
+## Row {height=40%}
+
+```{python}
+#| title: Population
+px.area(
+  df, x="year", y="pop", 
+  color="continent", line_group="country"
+)
+```
+
+```{r}
+# create gartner style 2x2
+```
+
