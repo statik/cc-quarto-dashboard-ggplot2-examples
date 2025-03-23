@@ -1,7 +1,10 @@
 --- 
 title: "Elliot dashboard experiments"
 author: ""
-format: dashboard
+format:
+  dashboard:
+    theme: darkly
+
 --- 
 
 ```{python}
