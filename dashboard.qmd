@@ -53,6 +53,7 @@ p
 library(ggplot2)
 library(ggrepel)
 library(grid)
+library(showtext)
 
 dataset <- tribble(
   ~item,   ~XScore,  ~YScore,
@@ -75,6 +76,12 @@ p <- p + theme(
           axis.ticks.y=element_blank(),
           axis.text.y=element_blank()
         )
+
+font_add_google("Open Sans")
+showtext_auto()
+# you have to install Open Sans for this to render
+# https://fonts.google.com/selection?query=Open+Sans
+p <- p + theme(text = element_text(family = "Open Sans"))
 
 p <- p + ggtitle("A Magic Quadrant - Created for you")
 
