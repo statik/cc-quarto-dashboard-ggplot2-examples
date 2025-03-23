@@ -7,12 +7,7 @@ format:
 
 --- 
 
-```{python}
-import plotly.express as px
-df = px.data.gapminder()
-```
-
-## Maps {height=60%}
+## Maps {height=40%}
 
 ```{r}
 # create map
@@ -49,17 +44,83 @@ p <- ggplot(df_sf)+
 p
 ```
 
-## Row {height=40%}
+## Row {height=60%}
 
-```{python}
-#| title: Population
-px.area(
-  df, x="year", y="pop", 
-  color="continent", line_group="country"
+
+```{r}
+# create gartner style 2x2, based on 
+# https://dataninjago.com/2017/12/20/r-visual-create-gartner-magic-quadrant-like-chart-in-power-bi-using-ggplot2/
+library(ggplot2)
+library(ggrepel)
+library(grid)
+
+dataset <- tribble(
+  ~item,   ~XScore,  ~YScore,
+  "Thing1",      25,       63,
+  "Competitor2", 72,       35,
+  "Leader1",     77,       62
 )
+
+p <- ggplot(dataset, aes(XScore, YScore))
+p <- p + scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) 
+p <- p + scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
+
+p <- p + labs(x="VISION",y="ABILITY")
+p <- p + theme(axis.title.x = element_text(hjust = .5, vjust=0, colour="darkgrey",size=10,face="bold"))
+p <- p + theme(axis.title.y = element_text(hjust = .5, vjust=0, colour="darkgrey",size=10,face="bold"))
+
+p <- p + theme(
+          axis.ticks.x=element_blank(), 
+          axis.text.x=element_blank(),
+          axis.ticks.y=element_blank(),
+          axis.text.y=element_blank()
+        )
+
+p <- p + ggtitle("A Magic Quadrant - Created for you")
+
+p <- p +
+      annotate("rect", xmin = 50, xmax = 100, ymin = 50, ymax = 100, fill= "#F8F9F9")  + 
+      annotate("rect", xmin = 0, xmax = 50, ymin = 0, ymax = 50 , fill= "#F8F9F9") + 
+      annotate("rect", xmin = 50, xmax = 100, ymin = 0, ymax = 50, fill= "white") + 
+      annotate("rect", xmin = 0, xmax = 50, ymin = 50, ymax = 100, fill= "white")
+
+p <- p + theme(panel.border = element_rect(colour = "lightgrey", fill=NA, linewidth=4))
+p <- p + geom_hline(yintercept=50, color = "lightgrey", size=1.5)
+p <- p + geom_vline(xintercept=50, color = "lightgrey", size=1.5)
+
+p <- p + geom_label(aes(x = 25, y = 97, label = "CHALLENGERS"), 
+                    label.padding = unit(2, "mm"),  fill = "lightgrey", color="white")
+p <- p + geom_label(aes(x = 75, y = 97, label = "LEADERS"), 
+                    label.padding = unit(2, "mm"), fill = "lightgrey", color="white")
+p <- p + geom_label(aes(x = 25, y = 3, label = "NICHE PLAYERS"), 
+                    label.padding = unit(2, "mm"),  fill = "lightgrey", color="white")
+p <- p + geom_label(aes(x = 75, y = 3, label = "VISIONARIES"), 
+                    label.padding = unit(2, "mm"), fill = "lightgrey", color="white")
+
+# draw the points
+p <- p + geom_point(colour = "#2896BA", size = 3)
+# p <- p + geom_text_repel(aes(label=item))
+# use geom_label_repel to get boxes around the label text
+p <- p + geom_text_repel(aes(label=item),colour="#2896BA", hjust=-0.5, vjust=0, size=4)
+
+
+# draw the arrows
+p <- p + annotation_custom(
+            grob = linesGrob(arrow=arrow(type="open", ends="last", length=unit(2,"mm")), 
+                   gp=gpar(col="lightgrey", lwd=4)), 
+            xmin = -2, xmax = -2, ymin = 25, ymax = 40
+          )
+p <- p + annotation_custom(
+  grob = linesGrob(arrow=arrow(type="open", ends="last", length=unit(2,"mm")), 
+                   gp=gpar(col="lightgrey", lwd=4)), 
+  xmin = 28, xmax = 43, ymin = -3, ymax = -3
+)
+
+gt = ggplot_gtable(ggplot_build(p))
+gt$layout$clip[gt$layout$name=="panel"] = "off"
+grid.draw(gt)
 ```
 
 ```{r}
 # create gartner style 2x2
 ```
-
